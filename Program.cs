@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 
 namespace Assgn01_Calculator
 {
-    public class Numbers
-    {
-        public int Number { get; set; }
-    }
     internal class Program
     {
+        
         static void Calculate(string input)
         {
-            //Numbers num = new Numbers();
+            /*
             foreach(char c in input)
             {
                 int a;
@@ -29,8 +26,42 @@ namespace Assgn01_Calculator
                     Console.WriteLine("Character");
                 }
             }
+            */
+            List<int> numbers = new List<int>(); //List to store numbers from input expression
+            List<char> operators = new List<char>(); //List to store operators/parentheses from input exp            
+
+            char[] chars = input.ToCharArray(); //split input expression into a char array
+            for(int i = 0; i < chars.Length; i++)
+            {
+                if (chars[i] == ' ') continue; // if char is whitespace, skip
+                if (char.IsDigit(chars[i]))
+                {
+                    numbers.Add(int.Parse(chars[i].ToString())); //convert i to int and add to numbers list
+                }
+                else if (chars[i] == '+' || chars[i] == '-' || chars[i] == '*' || chars[i] == '/')
+                {
+                    operators.Add(chars[i]);
+                }
+            }
+            PrintIntList(numbers);
+            PrintCharList(operators);
 
         }
+        static void PrintIntList(List<int> list)
+        {
+            foreach(var item in list)
+            {
+                Console.WriteLine(item);
+            }
+        }
+        static void PrintCharList(List<char> list)
+        {
+            foreach (var item in list)
+            {
+                Console.WriteLine(item);
+            }
+        }
+
         static void Main(string[] args)
         {
             Console.WriteLine("Calculator: ");
