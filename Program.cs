@@ -18,21 +18,22 @@ namespace Assgn01_Calculator
 {
     internal class Program
     {
-        static double Calculate(string input)
+        static int Calculate(string input)
         {
-            Stack<double> numbers = new Stack<double>(); //Stack to store numbers from input expression
-            Stack<char> operators = new Stack<char>(); //Stack to store operators/parentheses from input exp            
-
             char[] chars = input.ToCharArray(); //split input expression into a char array
+
+            Stack<int> numbers = new Stack<int>(); //Stack to store numbers from input expression
+            Stack<char> operators = new Stack<char>(); //Stack to store operators/parentheses from input exp            
+            
             for(int i = 0; i < chars.Length; i++)
             {
                 if (chars[i] == ' ') continue; //if char is whitespace, skip
 
-                if (char.IsDigit(chars[i])) //check if current char is a digit
+                if (chars[i] >= '0' && chars[i] <='9') //check if current char is a digit
                 {
                     /* Reference 1 used a StringBuilder to create multi-digit numbers */
                     StringBuilder sb = new StringBuilder();
-                    while(i < chars.Length && char.IsDigit(chars[i]))
+                    while(i < chars.Length && chars[i] >= '0' && chars[i] <= '9')
                     {
                         sb.Append(chars[i++]);
                     }
@@ -42,7 +43,8 @@ namespace Assgn01_Calculator
 
                 else if (chars[i] == '+' || chars[i] == '-' || chars[i] == '*' || chars[i] == '/')
                 {
-                    while(operators.Count > 0)
+                    //apply operator on top of operators to top two elements in numbers
+                    while(operators.Count > 0 && hasPrecedence(chars[i], operators.Peek()))
                     {
                         numbers.Push(ApplyOperator(operators.Pop(), numbers.Pop(), numbers.Pop()));
                     }
@@ -57,9 +59,20 @@ namespace Assgn01_Calculator
                 numbers.Push(ApplyOperator(operators.Pop(),numbers.Pop(), numbers.Pop()));
             }
             return numbers.Pop();
-
         }
-        static double ApplyOperator(char op, double b, double a)
+        static bool hasPrecedence(char op1, char op2)
+        {
+            if(op2 == '(' || op2 == ')')
+            {
+                return false;
+            }
+            if ((op1 == '*' || op1 == '/') && (op2 == '+' || op2 == '-'))
+            {
+                return false;
+            }
+            else return true;
+        }
+        static int ApplyOperator(char op, int b, int a)
         {
             switch (op)
             {
@@ -78,7 +91,7 @@ namespace Assgn01_Calculator
             }
             return 0;
         }
-        static void PrintIntList(Stack<double> list)
+        static void PrintIntList(Stack<int> list)
         {
             foreach(var item in list)
             {
