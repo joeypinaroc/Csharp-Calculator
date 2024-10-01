@@ -18,42 +18,41 @@ namespace Assgn01_Calculator
 {
     internal class Program
     {
-        static int Calculate(string input)
+        static double Calculate(string input)
         {
             char[] chars = input.ToCharArray(); //split input expression into a char array
 
-            Stack<int> numbers = new Stack<int>(); //Stack to store numbers from input expression
+            Stack<double> numbers = new Stack<double>(); //Stack to store numbers from input expression
             Stack<char> operators = new Stack<char>(); //Stack to store operators/parentheses from input exp            
             
             for(int i = 0; i < chars.Length; i++)
             {
                 if (chars[i] == ' ') continue; //if char is whitespace, skip
 
-                if (chars[i] >= '0' && chars[i] <='9') //check if current char is a digit
+                if (char.IsDigit(chars[i])) //check if current char is a digit
                 {
                     /* Reference 1 used a StringBuilder to create multi-digit numbers */
                     StringBuilder sb = new StringBuilder();
-                    while(i < chars.Length && chars[i] >= '0' && chars[i] <= '9')
+                    while(i < chars.Length && char.IsDigit(chars[i]))
                     {
                         sb.Append(chars[i++]);
                     }
-                    numbers.Push(int.Parse(sb.ToString())); //convert multi-digit string to int and add to numbers list
+                    numbers.Push(ConvertStringToDouble(sb.ToString())); //convert multi-digit string to number and add to numbers list
                     i--; //since i is now on the next digit, decrease i to correct the offset
                 }
 
                 else if (chars[i] == '+' || chars[i] == '-' || chars[i] == '*' || chars[i] == '/')
                 {
-                    //apply operator on top of operators to top two elements in numbers
+                    /* apply operator on top of operators to top two elements in numbers */
                     while(operators.Count > 0 && hasPrecedence(chars[i], operators.Peek()))
                     {
-                        numbers.Push(ApplyOperator(operators.Pop(), numbers.Pop(), numbers.Pop()));
+                        numbers.Push(ApplyOperator(operators.Pop(), numbers.Pop(), numbers.Pop())); //apply current operator to the last 2 numbers on top of Stack
                     }
                     operators.Push(chars[i]);
-                    //numbers.Push(ApplyOperator(operators.Pop(), numbers.Pop(), numbers.Pop())); //apply current operator to the last 2 numbers on top of Stack
                 }
             }
-            PrintIntList(numbers);
-            PrintCharList(operators);
+            PrintNumList(numbers);
+            //PrintCharList(operators);
             while(operators.Count > 0)
             {
                 numbers.Push(ApplyOperator(operators.Pop(),numbers.Pop(), numbers.Pop()));
@@ -72,7 +71,7 @@ namespace Assgn01_Calculator
             }
             else return true;
         }
-        static int ApplyOperator(char op, int b, int a)
+        static double ApplyOperator(char op, double b, double a)
         {
             switch (op)
             {
@@ -91,7 +90,7 @@ namespace Assgn01_Calculator
             }
             return 0;
         }
-        static void PrintIntList(Stack<int> list)
+        static void PrintNumList(Stack<double> list)
         {
             foreach(var item in list)
             {
@@ -105,6 +104,20 @@ namespace Assgn01_Calculator
                 Console.WriteLine(item);
             }
         }
+        static double ConvertStringToDouble(string str)
+        {
+            if (str == null) return 0;
+            else
+            {
+                double output;
+                double.TryParse(str, out output);
+                if(double.IsNaN(output))
+                {
+                    return 0;
+                }
+                return output;
+            }
+        }
 
         static void Main(string[] args)
         {
@@ -112,7 +125,8 @@ namespace Assgn01_Calculator
             Console.Write("Input: ");
             string input = (Console.ReadLine());
 
-            Calculate(input);
+            double answer = Calculate(input);
+            Console.WriteLine("Answer: " + answer);
            
         }
     }
