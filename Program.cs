@@ -65,6 +65,26 @@ namespace Assgn01_Calculator
                     i--; //since i is now on the next digit, decrease i to correct the offset
                 }
 
+                /* If char is '-' and is either the 1st char in the string,  is following an operator, or is following a whitespace, then it is a negative
+                 * number sign. */
+                if (chars[i] == '-' && (i == 0 || (chars[i-1] == '+' || chars[i-1] == '-' || chars[i-1] == '*' || chars[i-1] == '/') || chars[i-1] == '(' || chars[i-1] == ' '))
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(chars[i++]); //add - sign
+                    bool hasDecimal = false; //track decimal
+
+                    while(i < chars.Length && (char.IsDigit(chars[i]) || (chars[i] == '.' && !hasDecimal)))
+                    {
+                        if (chars[i] == '.')
+                        {
+                            hasDecimal = true;
+                        }
+                        sb.Append(chars[i++]);
+                    }
+                    numbers.Push(ConvertStringToDouble(sb.ToString()));
+                    i--;
+                }
+
                 else if (chars[i] == '(') //if char is opening bracket, push to operators
                 {
                     operators.Push(chars[i]);
@@ -72,7 +92,7 @@ namespace Assgn01_Calculator
 
                 else if (chars[i] == ')') //if char is closing bracket, solve entire bracket
                 {
-                    /* keep doing ApplyOperator method inside bracket until all operators are popped */
+                    /* Keep doing ApplyOperator method inside bracket until all operators are popped */
                     while (operators.Peek() != '(') 
                     {
                         numbers.Push(ApplyOperator(operators.Pop(), numbers.Pop(), numbers.Pop()));
